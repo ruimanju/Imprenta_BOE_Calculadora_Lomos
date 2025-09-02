@@ -162,7 +162,23 @@
 
 	 	 	 	 <div id="result"></div>
 	 	 	 	 <div id="advertencia"></div>
+			 
 	 	 </div>
+			<button id="toggle-table-btn" style="width: 220px; margin: 15px auto 0; display: block;">Mostrar Catálogo de Papeles</button>
+			<div id="papeles-table-container" style="display: none; width: 220px; margin: 15px auto; padding: 15px; border: 1px solid #e0e6ed; border-radius: 3.5px; background-color: #f5f5f5;">
+    			<h3>Catálogo de Papeles y Grosores</h3>
+    			<table id="papeles-table" style="width: 100%; border-collapse: collapse;">
+        			<thead>
+            			<tr>
+                			<th style="border: 1px solid #ccc; padding: 8px; text-align: left;">Nombre</th>
+                			<th style="border: 1px solid #ccc; padding: 8px; text-align: left;">Grosor (mm)</th>
+            			</tr>
+        			</thead>
+        			<tbody>
+            			</tbody>
+    			</table>
+			</div>
+	
 		<a href="#" id="toggle-editor">Gestionar papeles</a>
 		<div class="editor-container" id="editor-form">
 			<h2>Gestión de Papeles</h2>
@@ -187,6 +203,9 @@
     const nuevoPapelNombre = document.getElementById('nuevo-papel-nombre');
     const nuevoPapelGrosor = document.getElementById('nuevo-papel-grosor');
     const saveButton = document.querySelector('.editor-container button:not(#delete-btn)');
+	const toggleTableBtn = document.getElementById('toggle-table-btn');
+	const papelesTableContainer = document.getElementById('papeles-table-container');
+	const papelesTableBody = document.querySelector('#papeles-table tbody');
 
     // Función para cargar los datos del archivo y del localStorage
     async function cargarPapeles() {
@@ -364,6 +383,33 @@
         }
     });
 
+	function generarTablaPapeles() {
+    papelesTableBody.innerHTML = ''; // Limpiar la tabla
+    for (const papel in PAPEL_GROSORES) {
+        const row = document.createElement('tr');
+        const nombreCell = document.createElement('td');
+        const grosorCell = document.createElement('td');
+
+        nombreCell.textContent = papel;
+        grosorCell.textContent = PAPEL_GROSORES[papel];
+
+        row.appendChild(nombreCell);
+        row.appendChild(grosorCell);
+        papelesTableBody.appendChild(row);
+    }
+}
+
+toggleTableBtn.addEventListener('click', function() {
+    if (papelesTableContainer.style.display === 'none' || papelesTableContainer.style.display === '') {
+        generarTablaPapeles();
+        papelesTableContainer.style.display = 'block';
+        toggleTableBtn.textContent = 'Ocultar Catálogo de Papeles';
+    } else {
+        papelesTableContainer.style.display = 'none';
+        toggleTableBtn.textContent = 'Mostrar Catálogo de Papeles';
+    }
+});
+	
     cargarPapeles();
 </script>
 
@@ -375,5 +421,6 @@
 
 
 </html>
+
 
 
