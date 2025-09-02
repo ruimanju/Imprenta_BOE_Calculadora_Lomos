@@ -81,6 +81,22 @@
     					font-size: 0.8em;
 				}
 
+				#papeles-table {
+   						width: 100%;
+    					border-collapse: collapse; /* Esto asegura que los bordes se unan y no haya doble borde */
+				}
+
+				#papeles-table th,
+				#papeles-table td {
+    					border: 0.8px solid #ccc; /* Aplica un borde fino de color gris */
+    					padding: 8px; /* Añade un poco de espacio alrededor del texto en cada celda */
+    					text-align: left;
+				}
+
+				#papeles-table th {
+    					background-color: #f2f2f2; /* Opcional: un fondo ligeramente diferente para la cabecera */
+				}
+
 	 	 	 	 .footer {
 	 	 	 	 	 	 text-align: center;
 	 	 	 	 	 	 margin-top: 28px;
@@ -425,6 +441,7 @@ toggleTableBtn.addEventListener('click', function() {
 
 
 </html>
+
 
 
 
