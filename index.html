@@ -201,16 +201,23 @@
 	
 		<a href="#" id="toggle-editor">Gestionar papeles</a>
 		<div class="editor-container" id="editor-form">
-			<h2>Gestión de Papeles</h2>
-			<label for="edit-papel-select">Seleccionar papel para editar/eliminar:</label>
-			<select name="edit-papel-select" id="edit-papel-select"></select>
-			<label for="nuevo-papel-nombre">Nombre del papel:</label>
-			<input type="text" id="nuevo-papel-nombre" placeholder="Nombre">
-			<label for="nuevo-papel-grosor">Grosor (mm):</label>
-			<input type="number" id="nuevo-papel-grosor" step="0.0001" placeholder="Grosor en mm">
-			<button onclick="guardarPapel()">Añadir / Editar</button>
-			<button id="delete-btn" onclick="eliminarPapel()">Eliminar</button>
-		</div>		 
+		    <h2>Gestión de Papeles</h2>
+    		<div id="password-form">
+        		<label for="password-input">Introduce la contraseña:</label>
+        		<input type="password" id="password-input">
+        		<button id="access-btn">Acceder</button>
+    		</div>
+    		<div id="editor-content" style="display: none;">
+        		<label for="edit-papel-select">Seleccionar papel para editar/eliminar:</label>
+        		<select name="edit-papel-select" id="edit-papel-select"></select>
+        		<label for="nuevo-papel-nombre">Nombre del papel:</label>
+        		<input type="text" id="nuevo-papel-nombre" placeholder="Nombre">
+        		<label for="nuevo-papel-grosor">Grosor (mm):</label>
+        		<input type="number" id="nuevo-papel-grosor" step="0.0001" placeholder="Grosor en mm">
+        		<button onclick="guardarPapel()">Añadir / Editar</button>
+        		<button id="delete-btn" onclick="eliminarPapel()">Eliminar</button>
+    		</div>
+		</div>
 
 <script>
     const LOCAL_STORAGE_KEY = 'papelGrosoresLocales';
@@ -226,6 +233,11 @@
 	const toggleTableBtn = document.getElementById('toggle-table-btn');
 	const papelesTableContainer = document.getElementById('papeles-table-container');
 	const papelesTableBody = document.querySelector('#papeles-table tbody');
+	const passwordInput = document.getElementById('password-input');
+	const accessBtn = document.getElementById('access-btn');
+	const editorContent = document.getElementById('editor-content');
+	const passwordForm = document.getElementById('password-form');
+	const CORRECT_PASSWORD = "OOTT2025;"; // ¡Aquí definimos la contraseña!
 
     // Función para cargar los datos del archivo y del localStorage
     async function cargarPapeles() {
@@ -392,16 +404,30 @@
         }
     });
 
-    toggleEditorBtn.addEventListener('click', function(event) {
-        event.preventDefault();
-        if (editorForm.style.display === 'none' || editorForm.style.display === '') {
-            editorForm.style.display = 'block';
-            toggleEditorBtn.textContent = 'Ocultar gestión';
-        } else {
-            editorForm.style.display = 'none';
-            toggleEditorBtn.textContent = 'Gestionar papeles';
-        }
-    });
+   // Nuevo listener para el enlace de "Gestionar papeles"
+	toggleEditorBtn.addEventListener('click', function(event) {
+    	event.preventDefault();
+    	if (editorForm.style.display === 'none' || editorForm.style.display === '') {
+        	editorForm.style.display = 'block';
+        	toggleEditorBtn.textContent = 'Ocultar gestión';
+    	} else {
+        	editorForm.style.display = 'none';
+        	passwordForm.style.display = 'block';
+        	editorContent.style.display = 'none';
+        	toggleEditorBtn.textContent = 'Gestionar papeles';
+    	}
+	});
+
+	// Nuevo listener para el botón de "Acceder"
+	accessBtn.addEventListener('click', function() {
+  		if (passwordInput.value === CORRECT_PASSWORD) {
+        	passwordForm.style.display = 'none';
+        	editorContent.style.display = 'block';
+        	passwordInput.value = ''; // Limpiar el campo de contraseña por seguridad
+    	} else {
+        	alert('Contraseña incorrecta.');
+    	}
+	});
 
 	function generarTablaPapeles() {
     papelesTableBody.innerHTML = ''; // Limpiar la tabla
@@ -441,6 +467,7 @@ toggleTableBtn.addEventListener('click', function() {
 
 
 </html>
+
 
 
 
