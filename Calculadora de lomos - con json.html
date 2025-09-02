@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Calculadora de grosor de lomo</title>
+		<style>
+	 	 	 	 body {
+	 	 	 	 	 	 font-family: sans-serif;
+	 	 	 	 	 	 margin: 14px;
+	 	 	 	 	 	 font-size: 1em; /* Tamaño de fuente base para todos los elementos */
+	 	 	 	 }
+
+	 	 	 	 h1 {
+	 	 	 	 	 	 text-align: center;
+	 	 	 	 	 	 font-size: 1.3em; /* Mantenemos este tamaño, pero lo ajusto para que sea relativo al body */
+	 	 	 	 }
+
+	 	 	 	 .calculator {
+	 	 	 	 	 	 width: 340px;
+	 	 	 	 	 	 margin: 0 auto;
+	 	 	 	 	 	 border: 1px solid #ccc;
+	 	 	 	 	 	 padding: 15px;
+	 	 	 	 	 	 border-radius: 3.5px;
+	 	 	 	 }
+
+	 	 	 	 label {
+	 	 	 	 	 	 display: block;
+	 	 	 	 	 	 margin-bottom: 5px;
+	 	 	 	 }
+
+	 	 	 	 select,
+	 	 	 	 input {
+	 	 	 	 	 	 width: 100%;
+	 	 	 	 	 	 padding: 8px;
+	 	 	 	 	 	 margin-bottom: 10px;
+	 	 	 	 	 	 box-sizing: border-box;
+						 font-size: 0.9em; /* Ajuste específico para campos y selectores */
+	 	 	 	 }
+
+	 	 	 	 button {
+	 	 	 	 	 	 width: 100%;
+	 	 	 	 	 	 padding: 7px;
+	 	 	 	 	 	 background-color: #007BFF;
+	 	 	 	 	 	 color: white;
+	 	 	 	 	 	 border: none;
+	 	 	 	 	 	 border-radius: 3.5px;
+	 	 	 	 	 	 cursor: pointer;
+	 	 	 	 	 	 margin-top: 3.5px;
+						 font-weight: bold;
+						 font-size: 1em; /* Ajuste específico para campos y selectores */
+	 	 	 	 }
+
+	 	 	 	 button:hover {
+	 	 	 	 	 	 background-color: #0056b3;
+	 	 	 	 }
+
+	 	 	 	 #result {
+	 	 	 	 	 	 margin-top: 7px;
+	 	 	 	 	 	 font-weight: bold;
+	 	 	 	 }
+
+	 	 	 	 .logo-container {
+	 	 	 	 	 	 display: flex;
+	 	 	 	 	 	 justify-content: center;
+	 	 	 	 	 	 margin-bottom: 14px;
+	 	 	 	 }
+
+	 	 	 	 .logo {
+	 	 	 	 	 	 max-width: 480px;
+	 	 	 	 	 	 height: auto;
+	 	 	 	 }
+
+	 	 	 	 .advertencia {
+	 	 	 	 	 	 color: red;
+	 	 	 	 	 	 font-weight: bold;
+	 	 	 	 }
+
+	 	 	 	 .footer {
+	 	 	 	 	 	 text-align: center;
+	 	 	 	 	 	 margin-top: 28px;
+	 	 	 	 	 	 padding-top: 14px;
+	 	 	 	 	 	 border-top: 1px solid #e0e6ed;
+	 	 	 	 	 	 color: #7f8c8d;
+	 	 	 	 	 	 font-size: 0.85em; /* Reducido para que sea más pequeño que el resto */
+	 	 	 	 }
+
+	 	 	 	 #toggle-editor {
+						display: block;
+						width: 220px;
+						text-align: center;
+						margin: 15px auto 0; /* Centrado y con margen superior */
+						font-size: 0.9em; /* Para que sea más pequeño que el resto */
+						color: #007BFF;
+						text-decoration: underline;
+						cursor: pointer;
+				}
+
+	 	 	 	 #toggle-editor:hover {
+	 	 	 	 	 	 color: #0056b3;
+	 	 	 	 }
+
+	 	 	 	 .editor-container {
+					width: 340px; /* Anchura fija */
+					margin: 15px auto 0; /* Centrado y con margen superior */
+					padding: 15px;
+					border: 1px solid #e0e6ed;
+					border-radius: 3.5px;
+					background-color: #f5f5f5;
+					display: none;
+					box-sizing: border-box;
+					font-size: 0.9em;
+				}
+
+	 	 	 	 .editor-container h2 {
+	 	 	 	 	 	 margin: 0 0 7px 0;
+	 	 	 	 	 	 font-size: 1.1em; /* Ajuste para que sea ligeramente más grande que el texto del editor */
+	 	 	 	 	 	 text-align: center;
+	 	 	 	 	 	 color: #555;
+	 	 	 	 }
+
+	 	 	 	 .editor-container label {
+	 	 	 	 	 	 color: #555;
+	 	 	 	 }
+
+	 	 	 	 .editor-container button {
+	 	 	 	 	 	 background-color: #28a745;
+	 	 	 	 	 	 padding: 5.6px;
+	 	 	 	 }
+
+	 	 	 	 .editor-container button:hover {
+	 	 	 	 	 	 background-color: #218838;
+	 	 	 	 }
+
+	 	 	 	 #delete-btn {
+	 	 	 	 	 	 background-color: #dc3545;
+	 	 	 	 }
+
+	 	 	 	 #delete-btn:hover {
+	 	 	 	 	 	 background-color: #c82333;
+	 	 	 	 }
+	 	 </style>
+</head>
+
+<body>
+
+	 	 <div class="logo-container">
+	 	 	 	 <img src="img/logo.png" alt="BOE - OO TT" class="logo">
+	 	 </div>
+
+	 	 <h1>Calculadora de grosor de lomo</h1>
+
+	 	 <div class="calculator">
+	 	 	 	 <label for="papel">Selecciona el tipo de papel:</label>
+	 	 	 	 <select name="papel" id="papel"></select>
+
+	 	 	 	 <label for="num_paginas">Número de páginas:</label>
+	 	 	 	 <input type="number" id="num_paginas" name="num_paginas" required>
+
+	 	 	 	 <button onclick="calcularGrosor()">Calcular grosor</button>
+
+	 	 	 	 <div id="result"></div>
+	 	 	 	 <div id="advertencia"></div>
+	 	 </div>
+		<a href="#" id="toggle-editor">Gestionar papeles</a>
+		<div class="editor-container" id="editor-form">
+			<h2>Gestión de Papeles</h2>
+			<label for="edit-papel-select">Seleccionar papel para editar/eliminar:</label>
+			<select name="edit-papel-select" id="edit-papel-select"></select>
+			<label for="nuevo-papel-nombre">Nombre del papel:</label>
+			<input type="text" id="nuevo-papel-nombre" placeholder="Nombre">
+			<label for="nuevo-papel-grosor">Grosor (mm):</label>
+			<input type="number" id="nuevo-papel-grosor" step="0.0001" placeholder="Grosor en mm">
+			<button onclick="guardarPapel()">Añadir / Editar</button>
+			<button id="delete-btn" onclick="eliminarPapel()">Eliminar</button>
+		</div>		 
+
+<script>
+    const LOCAL_STORAGE_KEY = 'papelGrosoresLocales';
+
+    let PAPEL_GROSORES = {};
+    const selectPapel = document.getElementById('papel');
+    const editSelectPapel = document.getElementById('edit-papel-select');
+    const editorForm = document.getElementById('editor-form');
+    const toggleEditorBtn = document.getElementById('toggle-editor');
+    const nuevoPapelNombre = document.getElementById('nuevo-papel-nombre');
+    const nuevoPapelGrosor = document.getElementById('nuevo-papel-grosor');
+    const saveButton = document.querySelector('.editor-container button:not(#delete-btn)');
+
+    // Función para cargar los datos del archivo y del localStorage
+    async function cargarPapeles() {
+        try {
+            // 1. Cargar datos del archivo JSON
+            const response = await fetch('papeles.json');
+            if (!response.ok) {
+                throw new Error('No se pudo cargar el archivo de papeles.');
+            }
+            const data = await response.json();
+            const papelesBase = data.papeles;
+
+            // 2. Cargar datos de localStorage (si existen)
+            const papelesLocales = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+
+            // 3. Unir los datos: los locales sobrescriben a los del archivo
+            PAPEL_GROSORES = { ...papelesBase, ...papelesLocales };
+            
+            llenarSelects();
+        } catch (error) {
+            console.error("Error al cargar los papeles:", error);
+            alert("No se pudo cargar la lista de papeles. Usando datos por defecto.");
+            // Usar datos por defecto si falla la carga
+            PAPEL_GROSORES = {
+                "Semibiblia Blanco 50 gr FSC/M": 0.0552,
+                "Semibiblia Blanco 60 gr FSC/M": 0.064,
+                "Offset Superior Blanco 60 gr FSC/M": 0.0740,
+                // ... y el resto de la lista inicial
+            };
+            llenarSelects();
+        }
+    }
+
+    // El resto de las funciones (llenarSelects, guardarDatos, etc.) se mantienen igual
+    function llenarSelects() {
+        selectPapel.innerHTML = '';
+        editSelectPapel.innerHTML = '';
+        for (const papel in PAPEL_GROSORES) {
+            const option = document.createElement('option');
+            option.value = papel;
+            option.text = papel;
+            selectPapel.add(option);
+            const editOption = document.createElement('option');
+            editOption.value = papel;
+            editOption.text = papel;
+            editSelectPapel.add(editOption);
+        }
+    }
+
+    function guardarDatos() {
+        // Ahora solo guardamos los cambios locales, no todo el catálogo
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(PAPEL_GROSORES));
+    }
+
+    // ... (el resto del código sigue igual)
+
+    // Llama a la nueva función de carga al iniciar la página
+    cargarPapeles();
+</script>
+
+	 	 <div class="footer">
+	 	 	 	 <p>Herramienta para cálculo del lomo de las publicaciones | BOE - OO TT</p>
+	 	 	 	 <p>© 2025 Todos los derechos reservados</p>
+	 	 </div>
+</body>
+
+</html>
