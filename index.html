@@ -214,13 +214,23 @@
                 "Semibiblia Blanco 50 gr FSC/M": 0.0552,
                 "Semibiblia Blanco 60 gr FSC/M": 0.064,
                 "Offset Superior Blanco 60 gr FSC/M": 0.0740,
-                // ... y el resto de la lista inicial
+                "Offset Superior Blanco 70 gr FSC/M": 0.0889,
+                "Offset Superior Blanco 80 gr FSC/M": 0.1000,
+                "Offset Superior Blanco 90 gr FSC/M": 0.1113,
+                "Offset Superior Blanco 150 gr FSC/M": 0.1719,
+                "Offset Superior Blanco 200 gr FSC/M": 0.2530,
+                "Offset Ahuesado 80 gr FSC/M": 0.0952,
+                "Offset Ahuesado 90 gr FSC/M": 0.1042,
+                "Registro Ahuesado 140 gr FSC/M": 0.1510,
+                "Estucado Semimate Blanco 90 gr FSC/M": 0.0773,
+                "Estucado Semimate Blanco 135 gr FSC/M": 0.1160,
+                "Estucado Semimate Blanco 170 gr FSC/M": 0.1460,
+                "Estucado Semimate Blanco 300 gr FSC/M": 0.2780
             };
             llenarSelects();
         }
     }
 
-    // El resto de las funciones (llenarSelects, guardarDatos, etc.) se mantienen igual
     function llenarSelects() {
         selectPapel.innerHTML = '';
         editSelectPapel.innerHTML = '';
@@ -237,13 +247,123 @@
     }
 
     function guardarDatos() {
-        // Ahora solo guardamos los cambios locales, no todo el catálogo
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(PAPEL_GROSORES));
     }
 
-    // ... (el resto del código sigue igual)
+    function redondearAlza(numero) {
+        return Math.ceil(numero * 2) / 2;
+    }
 
-    // Llama a la nueva función de carga al iniciar la página
+    function calcularGrosor() {
+        const papelSeleccionado = selectPapel.value;
+        const numPaginas = parseInt(document.getElementById('num_paginas').value, 10);
+        const grosorHoja = PAPEL_GROSORES[papelSeleccionado];
+        let resultado = 0;
+        let advertencia = "";
+
+        if (grosorHoja && numPaginas > 0) {
+            const numHojas = numPaginas / 2;
+            resultado = numHojas * grosorHoja;
+            resultado = redondearAlza(resultado);
+
+            if (resultado > 49) {
+                advertencia = "<p class='advertencia'>Este volumen excede el límite máximo de grosor en encuadernación</p>";
+            }
+
+            document.getElementById('result').textContent = `El grosor del lomo es: ${resultado} mm`;
+            document.getElementById('advertencia').innerHTML = advertencia;
+        } else {
+            document.getElementById('result').textContent = "Por favor, selecciona el papel e introduce un número de páginas válido.";
+            document.getElementById('advertencia').innerHTML = "";
+        }
+    }
+
+    function guardarPapel() {
+        const nombre = nuevoPapelNombre.value.trim();
+        const grosor = parseFloat(nuevoPapelGrosor.value);
+        const papelSeleccionado = editSelectPapel.value;
+
+        if (!nombre) {
+            alert("Por favor, introduce un nombre para el papel.");
+            return;
+        }
+
+        if (isNaN(grosor) || grosor <= 0) {
+            alert("Por favor, introduce un grosor válido y mayor que cero.");
+            return;
+        }
+
+        if (nombre === papelSeleccionado && PAPEL_GROSORES.hasOwnProperty(papelSeleccionado)) {
+            PAPEL_GROSORES[nombre] = grosor;
+            alert(`Papel "${nombre}" actualizado.`);
+        } else {
+            if (PAPEL_GROSORES.hasOwnProperty(nombre)) {
+                if (!confirm(`El papel "${nombre}" ya existe. ¿Deseas sobrescribirlo?`)) {
+                    return;
+                }
+            }
+            if (nombre !== papelSeleccionado && PAPEL_GROSORES.hasOwnProperty(papelSeleccionado)) {
+                delete PAPEL_GROSORES[papelSeleccionado];
+            }
+            PAPEL_GROSORES[nombre] = grosor;
+            alert(`Papel "${nombre}" añadido / editado.`);
+        }
+
+        guardarDatos();
+        llenarSelects();
+        nuevoPapelNombre.value = '';
+        nuevoPapelGrosor.value = '';
+    }
+
+    function eliminarPapel() {
+        const papelAEliminar = editSelectPapel.value;
+        if (papelAEliminar) {
+            if (confirm(`¿Estás seguro de que quieres eliminar "${papelAEliminar}"?`)) {
+                delete PAPEL_GROSORES[papelAEliminar];
+                guardarDatos();
+                llenarSelects();
+                alert(`Papel "${papelAEliminar}" eliminado.`);
+                nuevoPapelNombre.value = '';
+                nuevoPapelGrosor.value = '';
+            }
+        } else {
+            alert("Selecciona un papel para eliminar.");
+        }
+    }
+
+    editSelectPapel.addEventListener('change', function() {
+        const papelSeleccionado = this.value;
+        const grosor = PAPEL_GROSORES[papelSeleccionado];
+        nuevoPapelNombre.value = papelSeleccionado;
+        nuevoPapelGrosor.value = grosor;
+        saveButton.textContent = 'Editar';
+    });
+    
+    nuevoPapelNombre.addEventListener('input', function() {
+        if (this.value.trim() !== editSelectPapel.value.trim()) {
+            saveButton.textContent = 'Añadir';
+        } else {
+            saveButton.textContent = 'Editar';
+        }
+    });
+
+    document.getElementById('num_paginas').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            calcularGrosor();
+        }
+    });
+
+    toggleEditorBtn.addEventListener('click', function(event) {
+        event.preventDefault();
+        if (editorForm.style.display === 'none' || editorForm.style.display === '') {
+            editorForm.style.display = 'block';
+            toggleEditorBtn.textContent = 'Ocultar gestión';
+        } else {
+            editorForm.style.display = 'none';
+            toggleEditorBtn.textContent = 'Gestionar papeles';
+        }
+    });
+
     cargarPapeles();
 </script>
 
@@ -255,3 +375,4 @@
 
 
 </html>
+
