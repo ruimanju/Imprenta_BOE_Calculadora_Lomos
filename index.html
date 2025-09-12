@@ -156,6 +156,7 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Grosor (mm)</th>
+                    <th>máx pág /vol</th>
                 </tr>
             </thead>
             <tbody>
@@ -233,17 +234,29 @@
 
         // Genera y llena la tabla del catálogo
         function generarTablaPapeles() {
+            // Diccionario con el número máximo de páginas por volumen
+            const MAX_PAGINAS = {
+                "Offset Superior Blanco 70 gr FSC/M": 1130,
+                "Offset Superior Blanco 80 gr FSC/M": 1010,
+                "Offset Superior Blanco 90 gr FSC/M": 910
+            };
+
             papelesTableBody.innerHTML = ''; // Limpiar la tabla
             for (const papel in PAPEL_GROSORES) {
                 const row = document.createElement('tr');
                 const nombreCell = document.createElement('td');
                 const grosorCell = document.createElement('td');
+                const maxPagCell = document.createElement('td');
 
                 nombreCell.textContent = papel;
                 grosorCell.textContent = PAPEL_GROSORES[papel];
+                
+                // Si el papel actual existe en MAX_PAGINAS, usa su valor, si no, deja la celda vacía
+                maxPagCell.textContent = MAX_PAGINAS[papel] || '';
 
                 row.appendChild(nombreCell);
                 row.appendChild(grosorCell);
+                row.appendChild(maxPagCell);
                 papelesTableBody.appendChild(row);
             }
         }
@@ -277,4 +290,3 @@
 </body>
 
 </html>
-
