@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -180,9 +180,13 @@
 	
     <script>
         // 1. Define aquí las referencias exactas de los papeles a estilizar
-        const PAPEL_CURSIVA = "Offset Superior Blanco 190 gr FSC/M";
-        const PAPEL_ROJO_NEGRITA = "Offset Superior Blanco 190 gr FSC/M";
-        const PAPEL_ROJO_NEGRITA = "Offset Superior Blanco 225 gr FSC/M";
+		const PAPELES_CURSIVA = [
+			"Offset Superior Blanco 200 gr FSC/M"
+		];
+		const PAPELES_ROJO_NEGRITA = [
+  			"Offset Superior Blanco 190 gr FSC/M",
+	    	"Offset Superior Blanco 225 gr FSC/M"
+		];
 	
         // Diccionario de grosores de papel
         const PAPEL_GROSORES = {
@@ -281,10 +285,10 @@
                 
                 // Si el papel actual existe en MAX_PAGINAS, usa su valor, si no, deja la celda vacía
                 maxPagCell.textContent = MAX_PAGINAS[papel] || '';
-				if (papel === PAPEL_CURSIVA) {
+                if (PAPELES_CURSIVA.includes(papel)) {
                     nombreCell.classList.add('papel-cursiva');
                 }
-                if (papel === PAPEL_ROJO_NEGRITA) {
+                if (PAPELES_ROJO_NEGRITA.includes(papel)) {
                     nombreCell.classList.add('papel-rojo-negrita');
                 }
                 row.appendChild(nombreCell);
@@ -323,4 +327,5 @@
 </body>
 
 </html>
+
 
