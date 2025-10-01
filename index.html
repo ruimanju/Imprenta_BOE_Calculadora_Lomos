@@ -179,153 +179,143 @@
     </div>
 	
     <script>
-        // 1. Define aquí las referencias exactas de los papeles a estilizar
-		const PAPELES_CURSIVA = [
-			"Offset Superior Blanco 200 gr FSC/M"
+    // 1. Define aquí las referencias exactas de los papeles a estilizar
+    const PAPELES_CURSIVA = [
+		"Offset Superior Blanco 200 gr FSC/M";
 		];
-		const PAPELES_ROJO_NEGRITA = [
-  			"Offset Superior Blanco 190 gr FSC/M",
-	    	"Offset Superior Blanco 225 gr FSC/M"
-		];
-	
-        // Diccionario de grosores de papel
-        const PAPEL_GROSORES = {
-            "Semibiblia Blanco 50 gr FSC/M": 0.0552,
-            "Semibiblia Blanco 60 gr FSC/M": 0.064,
-            "Offset Superior Blanco 60 gr FSC/M": 0.0740,
-            "Offset Superior Blanco 70 gr FSC/M": 0.0889,
-            "Offset Superior Blanco 80 gr FSC/M": 0.1000,
-            "Offset Superior Blanco 90 gr FSC/M": 0.1113,
-            "Offset Superior Blanco 150 gr FSC/M": 0.1719,
-            "Offset Superior Blanco 200 gr FSC/M": 0.2530,
-            "Offset Superior Blanco 190 gr FSC/M": 0.2280,
-            "Offset Superior Blanco 225 gr FSC/M": 0.2870,
-            "Offset Ahuesado 80 gr FSC/M": 0.0952,
-            "Offset Ahuesado 90 gr FSC/M": 0.1042,
-            "Registro Ahuesado 140 gr FSC/M": 0.1510,
-            "Estucado Semimate Blanco 90 gr FSC/M": 0.0773,
-            "Estucado Semimate Blanco 135 gr FSC/M": 0.1160,
-            "Estucado Semimate Blanco 170 gr FSC/M": 0.1460,
-            "Estucado Semimate Blanco 300 gr FSC/M": 0.2780
+    const PAPELES_ROJO_NEGRITA = [
+        "Offset Superior Blanco 190 gr FSC/M",
+        "Offset Superior Blanco 225 gr FSC/M"
+    ];
+
+    // Diccionario de grosores de papel
+    const PAPEL_GROSORES = {
+        "Semibiblia Blanco 50 gr FSC/M": 0.0552,
+        "Semibiblia Blanco 60 gr FSC/M": 0.064,
+        "Offset Superior Blanco 60 gr FSC/M": 0.0740,
+        "Offset Superior Blanco 70 gr FSC/M": 0.0889,
+        "Offset Superior Blanco 80 gr FSC/M": 0.1000,
+        "Offset Superior Blanco 90 gr FSC/M": 0.1113,
+        "Offset Superior Blanco 150 gr FSC/M": 0.1719,
+        "Offset Superior Blanco 200 gr FSC/M": 0.2530,
+        "Offset Superior Blanco 190 gr FSC/M": 0.2280,
+        "Offset Superior Blanco 225 gr FSC/M": 0.2870,
+        "Offset Ahuesado 80 gr FSC/M": 0.0952,
+        "Offset Ahuesado 90 gr FSC/M": 0.1042,
+        "Registro Ahuesado 140 gr FSC/M": 0.1510,
+        "Estucado Semimate Blanco 90 gr FSC/M": 0.0773,
+        "Estucado Semimate Blanco 135 gr FSC/M": 0.1160,
+        "Estucado Semimate Blanco 170 gr FSC/M": 0.1460,
+        "Estucado Semimate Blanco 300 gr FSC/M": 0.2780
+    };
+
+    // Elementos del DOM
+    const selectPapel = document.getElementById('papel');
+    const numPaginasInput = document.getElementById('num_paginas');
+    const toggleTableBtn = document.getElementById('toggle-table-btn');
+    const papelesTableContainer = document.getElementById('papeles-table-container');
+    const papelesTableBody = document.querySelector('#papeles-table tbody');
+
+    // Llena el menú desplegable con las opciones de papel
+    function llenarSelect() {
+        selectPapel.innerHTML = '';
+        for (const papel in PAPEL_GROSORES) {
+            const option = document.createElement('option');
+            option.value = papel;
+            option.text = papel;
+
+            if (papel === PAPEL_CURSIVA) {
+                option.classList.add('papel-cursiva');
+            }
+            if (PAPELES_ROJO_NEGRITA.includes(papel)) { // Condición corregida
+                option.classList.add('papel-rojo-negrita');
+            }
+            selectPapel.add(option);
+        }
+    }
+
+    // Redondea al alza al medio milímetro más cercano
+    function redondearAlza(numero) {
+        return Math.ceil(numero * 2) / 2;
+    }
+
+    // Función principal para calcular el grosor del lomo
+    function calcularGrosor() {
+        const papelSeleccionado = selectPapel.value;
+        const numPaginas = parseInt(numPaginasInput.value, 10);
+        const grosorHoja = PAPEL_GROSORES[papelSeleccionado];
+        let resultado = 0;
+        let advertencia = "";
+
+        if (grosorHoja && numPaginas > 0) {
+            const numHojas = numPaginas / 2;
+            resultado = numHojas * grosorHoja;
+            resultado = redondearAlza(resultado);
+
+            if (resultado > 50) {
+                advertencia = "<p class='advertencia'>Este volumen excede el límite máximo de grosor en encuadernación</p>";
+            }
+
+            document.getElementById('result').textContent = `El grosor del lomo es: ${resultado} mm`;
+            document.getElementById('advertencia').innerHTML = advertencia;
+        } else {
+            document.getElementById('result').textContent = "Por favor, selecciona el papel e introduce un número de páginas válido.";
+            document.getElementById('advertencia').innerHTML = "";
+        }
+    }
+
+    // Genera y llena la tabla del catálogo
+    function generarTablaPapeles() {
+        const MAX_PAGINAS = {
+            "Offset Superior Blanco 70 gr FSC/M": 1130,
+            "Offset Superior Blanco 80 gr FSC/M": 1010,
+            "Offset Superior Blanco 90 gr FSC/M": 910
         };
 
-        // Elementos del DOM
-        const selectPapel = document.getElementById('papel');
-        const numPaginasInput = document.getElementById('num_paginas');
-        const toggleTableBtn = document.getElementById('toggle-table-btn');
-        const papelesTableContainer = document.getElementById('papeles-table-container');
-        const papelesTableBody = document.querySelector('#papeles-table tbody');
+        papelesTableBody.innerHTML = ''; // Limpiar la tabla
+        for (const papel in PAPEL_GROSORES) {
+            const row = document.createElement('tr');
+            const nombreCell = document.createElement('td');
+            const grosorCell = document.createElement('td');
+            const maxPagCell = document.createElement('td');
 
-        // Llena el menú desplegable con las opciones de papel
-        function llenarSelect() {
-            selectPapel.innerHTML = '';
-            for (const papel in PAPEL_GROSORES) {
-                const option = document.createElement('option');
-                option.value = papel;
-                option.text = papel;
-				
-				if (papel === PAPEL_CURSIVA) {
-                    option.classList.add('papel-cursiva');
-                }
-                if (papel === PAPEL_ROJO_NEGRITA) {
-                    option.classList.add('papel-rojo-negrita');
-                }
-                selectPapel.add(option);
+            nombreCell.textContent = papel;
+            grosorCell.textContent = PAPEL_GROSORES[papel];
+            
+            maxPagCell.textContent = MAX_PAGINAS[papel] || '';
+            
+            if (PAPELES_CURSIVA.includes(papel)) {
+                nombreCell.classList.add('papel-cursiva');
             }
+            if (PAPELES_ROJO_NEGRITA.includes(papel)) {
+                nombreCell.classList.add('papel-rojo-negrita');
+            }
+            row.appendChild(nombreCell);
+            row.appendChild(grosorCell);
+            row.appendChild(maxPagCell);
+            papelesTableBody.appendChild(row);
         }
+    }
 
-        // Redondea al alza al medio milímetro más cercano
-        function redondearAlza(numero) {
-            return Math.ceil(numero * 2) / 2;
+    // Event listener para el botón de mostrar/ocultar tabla
+    toggleTableBtn.addEventListener('click', function() {
+        if (papelesTableContainer.style.display === 'none' || papelesTableContainer.style.display === '') {
+            generarTablaPapeles();
+            papelesTableContainer.style.display = 'block';
+            toggleTableBtn.textContent = 'Ocultar catálogo';
+        } else {
+            papelesTableContainer.style.display = 'none';
+            toggleTableBtn.textContent = 'Mostrar catálogo';
         }
+    });
 
-        // Función principal para calcular el grosor del lomo
-        function calcularGrosor() {
-            const papelSeleccionado = selectPapel.value;
-            const numPaginas = parseInt(numPaginasInput.value, 10);
-            const grosorHoja = PAPEL_GROSORES[papelSeleccionado];
-            let resultado = 0;
-            let advertencia = "";
-
-            if (grosorHoja && numPaginas > 0) {
-                const numHojas = numPaginas / 2;
-                resultado = numHojas * grosorHoja;
-                resultado = redondearAlza(resultado);
-
-                if (resultado > 50) {
-                    advertencia = "<p class='advertencia'>Este volumen excede el límite máximo de grosor en encuadernación</p>";
-                }
-
-                document.getElementById('result').textContent = `El grosor del lomo es: ${resultado} mm`;
-                document.getElementById('advertencia').innerHTML = advertencia;
-            } else {
-                document.getElementById('result').textContent = "Por favor, selecciona el papel e introduce un número de páginas válido.";
-                document.getElementById('advertencia').innerHTML = "";
-            }
+    // Event listener para el botón Enter en el campo de páginas
+    numPaginasInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            calcularGrosor();
         }
+    });
 
-        // Genera y llena la tabla del catálogo
-        function generarTablaPapeles() {
-            // Diccionario con el número máximo de páginas por volumen
-            const MAX_PAGINAS = {
-                "Offset Superior Blanco 70 gr FSC/M": 1130,
-                "Offset Superior Blanco 80 gr FSC/M": 1010,
-                "Offset Superior Blanco 90 gr FSC/M": 910
-            };
-
-            papelesTableBody.innerHTML = ''; // Limpiar la tabla
-            for (const papel in PAPEL_GROSORES) {
-                const row = document.createElement('tr');
-                const nombreCell = document.createElement('td');
-                const grosorCell = document.createElement('td');
-                const maxPagCell = document.createElement('td');
-
-                nombreCell.textContent = papel;
-                grosorCell.textContent = PAPEL_GROSORES[papel];
-                
-                // Si el papel actual existe en MAX_PAGINAS, usa su valor, si no, deja la celda vacía
-                maxPagCell.textContent = MAX_PAGINAS[papel] || '';
-                if (PAPELES_CURSIVA.includes(papel)) {
-                    nombreCell.classList.add('papel-cursiva');
-                }
-                if (PAPELES_ROJO_NEGRITA.includes(papel)) {
-                    nombreCell.classList.add('papel-rojo-negrita');
-                }
-                row.appendChild(nombreCell);
-                row.appendChild(grosorCell);
-                row.appendChild(maxPagCell);
-                papelesTableBody.appendChild(row);
-            }
-        }
-
-        // Event listener para el botón de mostrar/ocultar tabla
-        toggleTableBtn.addEventListener('click', function() {
-            if (papelesTableContainer.style.display === 'none' || papelesTableContainer.style.display === '') {
-                generarTablaPapeles();
-                papelesTableContainer.style.display = 'block';
-                toggleTableBtn.textContent = 'Ocultar catálogo';
-            } else {
-                papelesTableContainer.style.display = 'none';
-                toggleTableBtn.textContent = 'Mostrar catálogo';
-            }
-        });
-
-        // Event listener para el botón Enter en el campo de páginas
-        numPaginasInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                calcularGrosor();
-            }
-        });
-
-        // Llama a la función para llenar el select al cargar la página
-        llenarSelect();
-    </script>
-    <div class="footer">
-        <p>Herramienta para cálculo del lomo de las publicaciones | BOE - OO TT</p>
-        <p>© 2025 Todos los derechos reservados</p>
-    </div>
-</body>
-
-</html>
-
-
+    // Llama a la función para llenar el select al cargar la página
+    llenarSelect();
+</script>
