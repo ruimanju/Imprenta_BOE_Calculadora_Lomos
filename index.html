@@ -122,6 +122,19 @@
         #papeles-table th {
             background-color: #dae2e4;
         }
+		/* --- NUEVOS ESTILOS AÑADIDOS --- */
+        .papel-cursiva {
+            font-style: italic;
+        }
+        .papel-rojo-negrita {
+            color: red;
+            font-weight: bold;
+        }
+        .leyenda {
+            font-size: 0.9em;
+            margin-top: 12px;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -162,9 +175,15 @@
             <tbody>
                 </tbody>
         </table>
+        <p class="leyenda">En rojo y en negrita los papeles que provisionalmente y hasta agotar stock sustituyen a los que están en cursiva.</p>
     </div>
-
+	
     <script>
+        // 1. Define aquí las referencias exactas de los papeles a estilizar
+        const PAPEL_CURSIVA = "Offset Superior Blanco 190 gr FSC/M";
+        const PAPEL_ROJO_NEGRITA = "Offset Superior Blanco 190 gr FSC/M";
+        const PAPEL_ROJO_NEGRITA = "Offset Superior Blanco 225 gr FSC/M";
+	
         // Diccionario de grosores de papel
         const PAPEL_GROSORES = {
             "Semibiblia Blanco 50 gr FSC/M": 0.0552,
@@ -175,6 +194,8 @@
             "Offset Superior Blanco 90 gr FSC/M": 0.1113,
             "Offset Superior Blanco 150 gr FSC/M": 0.1719,
             "Offset Superior Blanco 200 gr FSC/M": 0.2530,
+            "Offset Superior Blanco 190 gr FSC/M": 0.2280,
+            "Offset Superior Blanco 225 gr FSC/M": 0.2870,
             "Offset Ahuesado 80 gr FSC/M": 0.0952,
             "Offset Ahuesado 90 gr FSC/M": 0.1042,
             "Registro Ahuesado 140 gr FSC/M": 0.1510,
@@ -198,6 +219,13 @@
                 const option = document.createElement('option');
                 option.value = papel;
                 option.text = papel;
+				
+				if (papel === PAPEL_CURSIVA) {
+                    option.classList.add('papel-cursiva');
+                }
+                if (papel === PAPEL_ROJO_NEGRITA) {
+                    option.classList.add('papel-rojo-negrita');
+                }
                 selectPapel.add(option);
             }
         }
@@ -253,7 +281,12 @@
                 
                 // Si el papel actual existe en MAX_PAGINAS, usa su valor, si no, deja la celda vacía
                 maxPagCell.textContent = MAX_PAGINAS[papel] || '';
-
+				if (papel === PAPEL_CURSIVA) {
+                    nombreCell.classList.add('papel-cursiva');
+                }
+                if (papel === PAPEL_ROJO_NEGRITA) {
+                    nombreCell.classList.add('papel-rojo-negrita');
+                }
                 row.appendChild(nombreCell);
                 row.appendChild(grosorCell);
                 row.appendChild(maxPagCell);
@@ -290,3 +323,4 @@
 </body>
 
 </html>
+
