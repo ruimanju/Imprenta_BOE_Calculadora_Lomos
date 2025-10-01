@@ -178,11 +178,11 @@
         <p class="leyenda">En rojo y en negrita los papeles que provisionalmente y hasta agotar stock sustituyen a los que están en cursiva.</p>
     </div>
 	
-    <script>
+<script>
     // 1. Define aquí las referencias exactas de los papeles a estilizar
     const PAPELES_CURSIVA = [
-		"Offset Superior Blanco 200 gr FSC/M";
-		];
+        "Offset Superior Blanco 200 gr FSC/M" // Corregido: sin punto y coma
+    ];
     const PAPELES_ROJO_NEGRITA = [
         "Offset Superior Blanco 190 gr FSC/M",
         "Offset Superior Blanco 225 gr FSC/M"
@@ -224,10 +224,11 @@
             option.value = papel;
             option.text = papel;
 
-            if (papel === PAPEL_CURSIVA) {
+            // Corregido: usar .includes() para la lista de papeles en cursiva
+            if (PAPELES_CURSIVA.includes(papel)) {
                 option.classList.add('papel-cursiva');
             }
-            if (PAPELES_ROJO_NEGRITA.includes(papel)) { // Condición corregida
+            if (PAPELES_ROJO_NEGRITA.includes(papel)) {
                 option.classList.add('papel-rojo-negrita');
             }
             selectPapel.add(option);
@@ -281,9 +282,9 @@
 
             nombreCell.textContent = papel;
             grosorCell.textContent = PAPEL_GROSORES[papel];
-            
+
             maxPagCell.textContent = MAX_PAGINAS[papel] || '';
-            
+
             if (PAPELES_CURSIVA.includes(papel)) {
                 nombreCell.classList.add('papel-cursiva');
             }
