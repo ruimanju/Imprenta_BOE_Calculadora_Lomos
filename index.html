@@ -34,7 +34,7 @@
         }
 
         select,
-        input {
+        input[type="number"] {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
@@ -46,6 +46,18 @@
             display: none; /* Oculto por defecto */
             margin-top: -5px;
         }
+        
+        /* Estilos para la casilla de verificación */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
 
         button {
             width: 100%;
@@ -55,8 +67,8 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-			font-size: 1em; /* Ajusta el tamaño del texto */
-			font-weight: bold; /* Pone el texto en negrita */
+			font-size: 1em;
+			font-weight: bold;
         }
 
         #result {
@@ -162,6 +174,11 @@
 
         <label for="num_paginas">Número de páginas:</label>
         <input type="number" id="num_paginas" name="num_paginas" required>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="tapa_dura" name="tapa_dura">
+            <label for="tapa_dura">Libro en tapa</label>
+        </div>
 
         <button onclick="calcularGrosor()">Calcular grosor</button>
 
@@ -244,6 +261,7 @@
     const numPaginasInput = document.getElementById('num_paginas');
     const customGrosorContainer = document.getElementById('custom-grosor-container');
     const customGrosorInput = document.getElementById('grosor_personalizado');
+    const tapaDuraCheckbox = document.getElementById('tapa_dura');
     const toggleTableBtn = document.getElementById('toggle-table-btn');
     const papelesTableContainer = document.getElementById('papeles-table-container');
     const papelesTableBody = document.querySelector('#papeles-table tbody');
@@ -282,7 +300,6 @@
         const numPaginas = parseInt(numPaginasInput.value, 10);
         let grosorHoja = 0;
         
-        // --- LÓGICA MODIFICADA PARA CALCULAR ---
         if (papelSeleccionado === 'otro') {
             grosorHoja = parseFloat(customGrosorInput.value);
         } else {
@@ -291,13 +308,21 @@
 
         let resultado = 0;
         let advertencia = "";
+        let limiteAdvertencia = 50;
 
         if (grosorHoja > 0 && numPaginas > 0) {
             const numHojas = numPaginas / 2;
             resultado = numHojas * grosorHoja;
+            
+            // --- LÓGICA PARA TAPA DURA ---
+            if (tapaDuraCheckbox.checked) {
+                resultado += 6;
+                limiteAdvertencia = 56;
+            }
+            
             resultado = redondearAlza(resultado);
 
-            if (resultado > 50) {
+            if (resultado > limiteAdvertencia) {
                 advertencia = "<p class='advertencia'>Este volumen excede el límite máximo de grosor en encuadernación</p>";
             }
 
@@ -331,7 +356,6 @@
                 link.textContent = papel;
                 link.target = "_blank"; // Abre el enlace en una nueva pestaña
                 
-                // --- MODIFICACIÓN PARA COLOREAR EL ENLACE ---
                 if (PAPELES_ROJO_NEGRITA.includes(papel)) {
                     link.style.color = 'red';
                 }
@@ -348,7 +372,6 @@
                 nombreCell.classList.add('papel-cursiva');
             }
             if (PAPELES_ROJO_NEGRITA.includes(papel)) {
-                // Se aplica la clase a la celda por si no tuviera enlace
                 nombreCell.classList.add('papel-rojo');
             }
             row.appendChild(nombreCell);
@@ -358,7 +381,7 @@
         }
     }
     
-    // --- EVENTO PARA MOSTRAR/OCULTAR EL CAMPO PERSONALIZADO ---
+    // Evento para mostrar/ocultar el campo personalizado
     selectPapel.addEventListener('change', function() {
         if (selectPapel.value === 'otro') {
             customGrosorContainer.style.display = 'block';
