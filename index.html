@@ -1,4 +1,4 @@
-	<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -39,6 +39,12 @@
             padding: 8px;
             margin-bottom: 10px;
             box-sizing: border-box;
+        }
+        
+        /* Contenedor para el campo de grosor personalizado */
+        .custom-grosor-container {
+            display: none; /* Oculto por defecto */
+            margin-top: -5px;
         }
 
         button {
@@ -149,6 +155,11 @@
         <label for="papel">Selecciona el tipo de papel:</label>
         <select name="papel" id="papel"></select>
 
+        <div class="custom-grosor-container" id="custom-grosor-container">
+            <label for="grosor_personalizado">Grosor de hoja (mm):</label>
+            <input type="number" id="grosor_personalizado" name="grosor_personalizado" min="0" step="0.001" placeholder="Ej: 0.125">
+        </div>
+
         <label for="num_paginas">Número de páginas:</label>
         <input type="number" id="num_paginas" name="num_paginas" required>
 
@@ -179,7 +190,7 @@
 <script>
     // 1. Define aquí las referencias exactas de los papeles a estilizar
     const PAPELES_CURSIVA = [
-        "Offset Superior Blanco 200 gr FSC/M" // Corregido: sin punto y coma
+        "Offset Superior Blanco 200 gr FSC/M"
     ];
     const PAPELES_ROJO_NEGRITA = [
         "Offset Superior Blanco 190 gr FSC/M",
@@ -207,9 +218,32 @@
         "Estucado Semimate Blanco 300 gr FSC/M": 0.2780
     };
 
+    // Diccionario de URLs de las fichas de material
+    const PAPEL_URLS = {
+        "Semibiblia Blanco 50 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2141",
+        "Semibiblia Blanco 60 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=3095",
+        "Offset Superior Blanco 60 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2548",
+        "Offset Superior Blanco 70 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2250",
+        "Offset Superior Blanco 80 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1864",
+        "Offset Superior Blanco 90 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1816",
+        "Offset Superior Blanco 150 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1990",
+        "Offset Superior Blanco 200 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1775",
+        "Offset Superior Blanco 190 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2184",
+        "Offset Superior Blanco 225 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2924",
+        "Offset Ahuesado 80 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2034",
+        "Offset Ahuesado 90 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2035",
+        "Registro Ahuesado 140 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1012",
+        "Estucado Semimate Blanco 90 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=3026",
+        "Estucado Semimate Blanco 135 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=3036",
+        "Estucado Semimate Blanco 170 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1843",
+        "Estucado Semimate Blanco 300 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1797"
+    };
+
     // Elementos del DOM
     const selectPapel = document.getElementById('papel');
     const numPaginasInput = document.getElementById('num_paginas');
+    const customGrosorContainer = document.getElementById('custom-grosor-container');
+    const customGrosorInput = document.getElementById('grosor_personalizado');
     const toggleTableBtn = document.getElementById('toggle-table-btn');
     const papelesTableContainer = document.getElementById('papeles-table-container');
     const papelesTableBody = document.querySelector('#papeles-table tbody');
@@ -222,7 +256,6 @@
             option.value = papel;
             option.text = papel;
 
-            // Corregido: usar .includes() para la lista de papeles en cursiva
             if (PAPELES_CURSIVA.includes(papel)) {
                 option.classList.add('papel-cursiva');
             }
@@ -231,6 +264,11 @@
             }
             selectPapel.add(option);
         }
+        // --- AÑADE LA OPCIÓN "OTRO" ---
+        const otroOption = document.createElement('option');
+        otroOption.value = 'otro';
+        otroOption.text = 'Otro...';
+        selectPapel.add(otroOption);
     }
 
     // Redondea al alza al medio milímetro más cercano
@@ -242,11 +280,19 @@
     function calcularGrosor() {
         const papelSeleccionado = selectPapel.value;
         const numPaginas = parseInt(numPaginasInput.value, 10);
-        const grosorHoja = PAPEL_GROSORES[papelSeleccionado];
+        let grosorHoja = 0;
+        
+        // --- LÓGICA MODIFICADA PARA CALCULAR ---
+        if (papelSeleccionado === 'otro') {
+            grosorHoja = parseFloat(customGrosorInput.value);
+        } else {
+            grosorHoja = PAPEL_GROSORES[papelSeleccionado];
+        }
+
         let resultado = 0;
         let advertencia = "";
 
-        if (grosorHoja && numPaginas > 0) {
+        if (grosorHoja > 0 && numPaginas > 0) {
             const numHojas = numPaginas / 2;
             resultado = numHojas * grosorHoja;
             resultado = redondearAlza(resultado);
@@ -258,7 +304,7 @@
             document.getElementById('result').textContent = `El grosor del lomo es: ${resultado} mm`;
             document.getElementById('advertencia').innerHTML = advertencia;
         } else {
-            document.getElementById('result').textContent = "Por favor, selecciona el papel e introduce un número de páginas válido.";
+            document.getElementById('result').textContent = "Por favor, completa todos los campos requeridos.";
             document.getElementById('advertencia').innerHTML = "";
         }
     }
@@ -277,16 +323,32 @@
             const nombreCell = document.createElement('td');
             const grosorCell = document.createElement('td');
             const maxPagCell = document.createElement('td');
+            
+            const url = PAPEL_URLS[papel];
+            if (url) {
+                const link = document.createElement('a');
+                link.href = url;
+                link.textContent = papel;
+                link.target = "_blank"; // Abre el enlace en una nueva pestaña
+                
+                // --- MODIFICACIÓN PARA COLOREAR EL ENLACE ---
+                if (PAPELES_ROJO_NEGRITA.includes(papel)) {
+                    link.style.color = 'red';
+                }
+                
+                nombreCell.appendChild(link);
+            } else {
+                nombreCell.textContent = papel;
+            }
 
-            nombreCell.textContent = papel;
             grosorCell.textContent = PAPEL_GROSORES[papel];
-
             maxPagCell.textContent = MAX_PAGINAS[papel] || '';
 
             if (PAPELES_CURSIVA.includes(papel)) {
                 nombreCell.classList.add('papel-cursiva');
             }
             if (PAPELES_ROJO_NEGRITA.includes(papel)) {
+                // Se aplica la clase a la celda por si no tuviera enlace
                 nombreCell.classList.add('papel-rojo');
             }
             row.appendChild(nombreCell);
@@ -295,6 +357,15 @@
             papelesTableBody.appendChild(row);
         }
     }
+    
+    // --- EVENTO PARA MOSTRAR/OCULTAR EL CAMPO PERSONALIZADO ---
+    selectPapel.addEventListener('change', function() {
+        if (selectPapel.value === 'otro') {
+            customGrosorContainer.style.display = 'block';
+        } else {
+            customGrosorContainer.style.display = 'none';
+        }
+    });
 
     // Event listener para el botón de mostrar/ocultar tabla
     toggleTableBtn.addEventListener('click', function() {
@@ -318,5 +389,5 @@
     // Llama a la función para llenar el select al cargar la página
     llenarSelect();
 </script>
-
-
+</body>
+</html>
