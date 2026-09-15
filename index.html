@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de grosor de lomo</title>
+    <title>Calculadora de grosor de lomo y consumo</title>
     <style>
         body {
             font-family: sans-serif;
@@ -21,37 +21,49 @@
         }
 
         .calculator {
-            width: 340px;
+            width: 360px;
             margin: 0 auto;
             border: 1px solid #ccc;
             padding: 15px;
-            border-radius: 3.5px;
+            border-radius: 4px;
+            background-color: #fafafa;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            font-size: 0.9em;
+            font-weight: 600;
         }
 
         select,
         input[type="number"] {
             width: 100%;
-            padding: 8px;
+            padding: 7px;
             margin-bottom: 10px;
             box-sizing: border-box;
+            border: 1px solid #bbb;
+            border-radius: 3px;
+        }
+
+        .row-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row-inputs div {
+            flex: 1;
         }
         
-        /* Contenedor para el campo de grosor personalizado */
         .custom-grosor-container {
-            display: none; /* Oculto por defecto */
+            display: none;
             margin-top: -5px;
         }
         
-        /* Estilos para la casilla de verificación */
         .checkbox-container {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .checkbox-container input[type="checkbox"] {
@@ -59,112 +71,126 @@
             margin-right: 8px;
         }
 
-        button {
+        button.action-btn {
             width: 100%;
             padding: 10px;
             background-color: #007BFF;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-			font-size: 1em;
-			font-weight: bold;
+            font-size: 1em;
+            font-weight: bold;
         }
 
-        #result {
-            margin-top: 10px;
-            font-weight: bold;
+        button.action-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .results-box {
+            margin-top: 12px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        .results-box p {
+            margin: 4px 0;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .logo {
-            max-width: 480px;
+            max-width: 440px;
             height: auto;
         }
 
         .advertencia {
-            color: red;
+            color: #d9534f;
             font-weight: bold;
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e6ed;
-            color: #7f8c8d;
-            font-size: 1rem;
-        }
-
-        /* --- Estilos para la tabla del catálogo --- */
         #toggle-table-btn {
             width: 220px;
             margin: 15px auto 0;
-            padding: 10px;
+            padding: 9px;
             background-color: #dae2e4;
             color: #333;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 0.95em;
         }
 
         #papeles-table-container {
-            width: 530px; /* Ensanchado para alojar cómodamente la columna Stock */
+            width: 540px;
             margin: 15px auto;
             padding: 8px;
             border: 1px solid #e0e6ed;
-            border-radius: 3.5px;
+            border-radius: 4px;
             background-color: #f2f2f2;
-            display: none; /* Inicialmente oculta */
+            display: none;
         }
 
         #papeles-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9em;
+            font-size: 0.88em;
         }
 
         #papeles-table th,
         #papeles-table td {
             border: 1px solid #ccc;
-            padding: 8px;
+            padding: 6px 8px;
             text-align: left;
         }
 
         #papeles-table th {
             background-color: #dae2e4;
         }
+
+        #papeles-table tbody tr {
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        #papeles-table tbody tr:hover {
+            background-color: #e6f2ff !important;
+        }
+
         .papel-cursiva {
             font-style: italic;
         }
+
         .papel-rojo {
             color: red;
         }
+
         .leyenda {
-            font-size: 0.9em;
-            margin-top: 12px;
-            color: #333;
+            font-size: 0.85em;
+            margin-top: 10px;
+            color: #444;
         }
     </style>
 </head>
 
 <body>
-	<div class="logo-container">
+    <div class="logo-container">
         <a href="https://ruimanju.github.io/OOOTT_Acceso_Apps/">
             <img src="img/logo.png" alt="BOE - OO TT" class="logo">
         </a>
     </div>
 
-    <h1>Calculadora de grosor de lomo</h1>
+    <h1>Calculadora de grosor de lomo y pliegos</h1>
 
-    <div class="calculator">
-        <label for="papel">Selecciona el tipo de papel:</label>
+    <div class="calculator" id="calculadora-box">
+        <label for="papel">Tipo de papel:</label>
         <select name="papel" id="papel"></select>
 
         <div class="custom-grosor-container" id="custom-grosor-container">
@@ -172,24 +198,51 @@
             <input type="number" id="grosor_personalizado" name="grosor_personalizado" min="0" step="0.001" placeholder="Ej: 0.125">
         </div>
 
-        <label for="num_paginas">Número de páginas:</label>
-        <input type="number" id="num_paginas" name="num_paginas" required>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="tapa_dura" name="tapa_dura">
-            <label for="tapa_dura">Libro en tapa</label>
+        <div class="row-inputs">
+            <div>
+                <label for="num_paginas">Páginas:</label>
+                <input type="number" id="num_paginas" name="num_paginas" placeholder="Ej: 240" required>
+            </div>
+            <div>
+                <label for="tirada">Tirada (ejemp.):</label>
+                <input type="number" id="tirada" name="tirada" placeholder="Ej: 500">
+            </div>
         </div>
 
-        <button onclick="calcularGrosor()">Calcular grosor</button>
+        <div class="row-inputs">
+            <div>
+                <label for="formato_libro">Formato libro:</label>
+                <select id="formato_libro">
+                    <option value="170x240">17 x 24 cm</option>
+                    <option value="150x210">15 x 21 cm (A5 aprox)</option>
+                    <option value="210x297">21 x 29.7 cm (A4)</option>
+                </select>
+            </div>
+            <div>
+                <label for="merma">Merma (%):</label>
+                <input type="number" id="merma" value="5" min="0" max="30">
+            </div>
+        </div>
 
-        <div id="result"></div>
-        <div id="advertencia"></div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="tapa_dura" name="tapa_dura">
+            <label for="tapa_dura" style="margin-bottom:0; font-weight:normal;">Libro en tapa dura (+6 mm)</label>
+        </div>
+
+        <button class="action-btn" onclick="calcular()">Calcular</button>
+
+        <div class="results-box" id="results-box" style="display:none;">
+            <p id="result-lomo"></p>
+            <p id="result-consumo"></p>
+            <div id="advertencia"></div>
+        </div>
     </div>
 
     <button id="toggle-table-btn">Mostrar catálogo</button>
 
     <div id="papeles-table-container">
         <h3>Catálogo de papeles y grosores</h3>
+        <p style="font-size: 0.8em; color: #555; margin-top:-5px;">Haz clic en cualquier fila para cargarla en la calculadora.</p>
         <table id="papeles-table">
             <thead>
                 <tr>
@@ -199,14 +252,12 @@
                     <th>Stock</th>
                 </tr>
             </thead>
-            <tbody>
-            </tbody>
+            <tbody></tbody>
         </table>
         <p class="leyenda">En negro los papeles estándar, <span class="papel-cursiva">en cursiva</span> los que provisionalmente están sin stock y <span class="papel-rojo">en rojo</span> los de sustitución.</p>
     </div>
-	
+
 <script>
-    // 1. Define aquí las referencias exactas de los papeles a estilizar
     const PAPELES_CURSIVA = [
         "Offset Superior Blanco 200 gr FSC/M"
     ];
@@ -215,7 +266,6 @@
         "Offset Superior Blanco 225 gr FSC/M"
     ];
 
-    // Diccionario de grosores de papel
     const PAPEL_GROSORES = {
         "Semibiblia Blanco 50 gr FSC/M": 0.0552,
         "Semibiblia Blanco 60 gr FSC/M": 0.064,
@@ -236,7 +286,6 @@
         "Estucado Semimate Blanco 300 gr FSC/M": 0.2780
     };
 
-    // Diccionario de URLs de las fichas de material
     const PAPEL_URLS = {
         "Semibiblia Blanco 50 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=2141",
         "Semibiblia Blanco 60 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=3095",
@@ -257,9 +306,11 @@
         "Estucado Semimate Blanco 300 gr FSC/M": "https://intraboe.boe.es/almacen/ficha_material.php?id_tipo_material=1797"
     };
 
-    // Elementos del DOM
     const selectPapel = document.getElementById('papel');
     const numPaginasInput = document.getElementById('num_paginas');
+    const tiradaInput = document.getElementById('tirada');
+    const formatoLibroSelect = document.getElementById('formato_libro');
+    const mermaInput = document.getElementById('merma');
     const customGrosorContainer = document.getElementById('custom-grosor-container');
     const customGrosorInput = document.getElementById('grosor_personalizado');
     const tapaDuraCheckbox = document.getElementById('tapa_dura');
@@ -267,7 +318,11 @@
     const papelesTableContainer = document.getElementById('papeles-table-container');
     const papelesTableBody = document.querySelector('#papeles-table tbody');
 
-    // Llena el menú desplegable con las opciones de papel
+    // Función auxiliar para formatear números con punto de millar
+    function formatoMillares(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     function llenarSelect() {
         selectPapel.innerHTML = '';
         for (const papel in PAPEL_GROSORES) {
@@ -275,87 +330,100 @@
             option.value = papel;
             option.text = papel;
 
-            if (PAPELES_CURSIVA.includes(papel)) {
-                option.classList.add('papel-cursiva');
-            }
-            if (PAPELES_ROJO_NEGRITA.includes(papel)) {
-                option.classList.add('papel-rojo');
-            }
+            if (PAPELES_CURSIVA.includes(papel)) option.classList.add('papel-cursiva');
+            if (PAPELES_ROJO_NEGRITA.includes(papel)) option.classList.add('papel-rojo');
             selectPapel.add(option);
         }
-        // --- AÑADE LA OPCIÓN "OTRO" ---
         const otroOption = document.createElement('option');
         otroOption.value = 'otro';
         otroOption.text = 'Otro...';
         selectPapel.add(otroOption);
     }
 
-    // Redondea al alza al medio milímetro más cercano
     function redondearAlza(numero) {
         return Math.ceil(numero * 2) / 2;
     }
 
-    // Función principal para calcular el grosor del lomo
-    function calcularGrosor() {
-        const papelSeleccionado = selectPapel.value;
-        const numPaginas = parseInt(numPaginasInput.value, 10);
-        let grosorHoja = 0;
-        
-        if (papelSeleccionado === 'otro') {
-            grosorHoja = parseFloat(customGrosorInput.value);
-        } else {
-            grosorHoja = PAPEL_GROSORES[papelSeleccionado];
-        }
-
-        let resultado = 0;
-        let advertencia = "";
-        let limiteAdvertencia = 50;
-
-        if (grosorHoja > 0 && numPaginas > 0) {
-            const numHojas = numPaginas / 2;
-            resultado = numHojas * grosorHoja;
-            
-            // --- LÓGICA PARA TAPA DURA ---
-            if (tapaDuraCheckbox.checked) {
-                resultado += 6;
-                limiteAdvertencia = 56;
-            }
-            
-            resultado = redondearAlza(resultado);
-
-            if (resultado > limiteAdvertencia) {
-                advertencia = "<p class='advertencia'>Este volumen excede el límite máximo de grosor en encuadernación</p>";
-            }
-
-            document.getElementById('result').textContent = `El grosor del lomo es: ${resultado} mm`;
-            document.getElementById('advertencia').innerHTML = advertencia;
-        } else {
-            document.getElementById('result').textContent = "Por favor, completa todos los campos requeridos.";
-            document.getElementById('advertencia').innerHTML = "";
+    // Calcula cuántas páginas de libro caben por pliego matriz (asumiendo 70x100 cortado a 330x487)
+    function paginasPorPliego(formato) {
+        switch (formato) {
+            case '170x240': return 16; // 4 hojas máq x 4 págs
+            case '150x210': return 16; // 4 hojas máq x 4 págs
+            case '210x297': return 8;  // 4 hojas máq x 2 págs
+            default: return 16;
         }
     }
 
-    // Genera y llena la tabla del catálogo
+    function calcular() {
+        const papelSeleccionado = selectPapel.value;
+        const numPaginas = parseInt(numPaginasInput.value, 10);
+        const tirada = parseInt(tiradaInput.value, 10) || 0;
+        const mermaPct = parseFloat(mermaInput.value) || 0;
+        let grosorHoja = (papelSeleccionado === 'otro') ? parseFloat(customGrosorInput.value) : PAPEL_GROSORES[papelSeleccionado];
+
+        if (!grosorHoja || !numPaginas || numPaginas <= 0) {
+            alert("Introduce al menos un número válido de páginas y grosor.");
+            return;
+        }
+
+        // --- CÁLCULO DE LOMO ---
+        let lomo = (numPaginas / 2) * grosorHoja;
+        let limite = 50;
+        if (tapaDuraCheckbox.checked) {
+            lomo += 6;
+            limite = 56;
+        }
+        lomo = redondearAlza(lomo);
+
+        document.getElementById('results-box').style.display = 'block';
+        document.getElementById('result-lomo').innerHTML = `<strong>Lomo estimado:</strong> ${lomo} mm`;
+
+        const advEl = document.getElementById('advertencia');
+        if (lomo > limite) {
+            advEl.innerHTML = "<p class='advertencia'>Advertencia: Este volumen supera el grosor recomendado.</p>";
+        } else {
+            advEl.innerHTML = "";
+        }
+
+        // --- CÁLCULO DE CONSUMO DE PAPEL ---
+        const resultConsumoEl = document.getElementById('result-consumo');
+        if (tirada > 0) {
+            const pagsPliego = paginasPorPliego(formatoLibroSelect.value);
+            const pliegosNetos = Math.ceil((numPaginas * tirada) / pagsPliego);
+            const pliegosBrutos = Math.ceil(pliegosNetos * (1 + (mermaPct / 100)));
+
+            resultConsumoEl.innerHTML = `<strong>Papel necesario:</strong> ${formatoMillares(pliegosBrutos)} pliegos matriz (inc. ${mermaPct}% merma)`;
+        } else {
+            resultConsumoEl.innerHTML = "";
+        }
+    }
+
     function generarTablaPapeles() {
-        papelesTableBody.innerHTML = ''; // Limpiar la tabla
+        papelesTableBody.innerHTML = '';
         for (const papel in PAPEL_GROSORES) {
             const row = document.createElement('tr');
             const nombreCell = document.createElement('td');
             const grosorCell = document.createElement('td');
             const maxPagCell = document.createElement('td');
-            const stockCell = document.createElement('td'); // Celda para Tampermonkey
-            
+            const stockCell = document.createElement('td');
+
+            // Clic en la fila: selecciona en el combo y sube el scroll
+            row.addEventListener('click', (e) => {
+                if (e.target.tagName.toLowerCase() !== 'a') {
+                    selectPapel.value = papel;
+                    selectPapel.dispatchEvent(new Event('change'));
+                    document.getElementById('calculadora-box').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
             const url = PAPEL_URLS[papel];
             if (url) {
                 const link = document.createElement('a');
                 link.href = url;
                 link.textContent = papel;
-                link.target = "_blank"; // Abre el enlace en una nueva pestaña
-                
-                if (PAPELES_ROJO_NEGRITA.includes(papel)) {
-                    link.style.color = 'red';
-                }
-                
+                link.target = "_blank";
+                link.onclick = (e) => e.stopPropagation();
+                if (PAPELES_ROJO_NEGRITA.includes(papel)) link.style.color = 'red';
                 nombreCell.appendChild(link);
             } else {
                 nombreCell.textContent = papel;
@@ -364,27 +432,23 @@
             const grosor = PAPEL_GROSORES[papel];
             grosorCell.textContent = grosor;
 
-            // Extrae el gramaje del nombre (ej: "150 gr" -> 150)
             const gramajeMatch = papel.match(/(\d+)\s*gr/i);
             const gramaje = gramajeMatch ? parseInt(gramajeMatch[1], 10) : null;
 
-            // Criterios: máx 150 g/m² y máx 52 mm de grosor (2 págs por hoja)
             if (gramaje && gramaje <= 150 && grosor > 0) {
                 const maxHojas = Math.floor(52 / grosor);
-                maxPagCell.textContent = maxHojas * 2;
+                maxPagCell.textContent = formatoMillares(maxHojas * 2);
             } else {
                 maxPagCell.textContent = '';
             }
+            maxPagCell.style.textAlign = 'right';
 
-            // Celda vacía por defecto; el script de Tampermonkey la rellenará
             stockCell.textContent = '-';
+            stockCell.style.textAlign = 'right';
 
-            if (PAPELES_CURSIVA.includes(papel)) {
-                nombreCell.classList.add('papel-cursiva');
-            }
-            if (PAPELES_ROJO_NEGRITA.includes(papel)) {
-                nombreCell.classList.add('papel-rojo');
-            }
+            if (PAPELES_CURSIVA.includes(papel)) nombreCell.classList.add('papel-cursiva');
+            if (PAPELES_ROJO_NEGRITA.includes(papel)) nombreCell.classList.add('papel-rojo');
+
             row.appendChild(nombreCell);
             row.appendChild(grosorCell);
             row.appendChild(maxPagCell);
@@ -392,8 +456,7 @@
             papelesTableBody.appendChild(row);
         }
     }
-    
-    // Evento para mostrar/ocultar el campo personalizado
+
     selectPapel.addEventListener('change', function() {
         if (selectPapel.value === 'otro') {
             customGrosorContainer.style.display = 'block';
@@ -402,7 +465,6 @@
         }
     });
 
-    // Event listener para el botón de mostrar/ocultar tabla
     toggleTableBtn.addEventListener('click', function() {
         if (papelesTableContainer.style.display === 'none' || papelesTableContainer.style.display === '') {
             generarTablaPapeles();
@@ -414,14 +476,12 @@
         }
     });
 
-    // Event listener para el botón Enter en el campo de páginas
-    numPaginasInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            calcularGrosor();
-        }
+    [numPaginasInput, tiradaInput, mermaInput].forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calcular();
+        });
     });
 
-    // Llama a la función para llenar el select al cargar la página
     llenarSelect();
 </script>
 </body>
