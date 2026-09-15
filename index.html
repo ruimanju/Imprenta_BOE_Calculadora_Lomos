@@ -34,7 +34,8 @@
         }
 
         select,
-        input[type="number"] {
+        input[type="number"],
+        input[type="text"] {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
@@ -180,6 +181,16 @@
     <h1>Calculadora de grosor de lomo</h1>
 
     <div class="calculator" id="calculadora-box">
+        <!-- BLOQUE PARA IMPORTAR POR HR -->
+        <div style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #ccc;">
+            <label for="num_hr">Cargar desde Hoja de Ruta (HR):</label>
+            <div style="display: flex; gap: 6px;">
+                <input type="text" id="num_hr" placeholder="Ej: 2026-2888" style="margin-bottom: 0;">
+                <button type="button" id="btn-cargar-hr" style="width: 100px; padding: 7px; background: #6c757d; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85em; font-weight: bold;">Cargar</button>
+            </div>
+            <div id="hr-status" style="font-size: 0.8em; margin-top: 5px; color: #555;"></div>
+        </div>
+
         <label for="papel">Selecciona el tipo de papel:</label>
         <select name="papel" id="papel"></select>
 
@@ -305,7 +316,8 @@
         return Math.ceil(numero * 2) / 2;
     }
 
-    function calcularGrosor() {
+    // Se asigna a window para que Tampermonkey pueda invocarlo automáticamente
+    window.calcularGrosor = function() {
         const papelSeleccionado = selectPapel.value;
         const numPaginas = parseInt(numPaginasInput.value, 10);
         let grosorHoja = 0;
@@ -341,7 +353,7 @@
             document.getElementById('result').textContent = "Por favor, completa todos los campos requeridos.";
             document.getElementById('advertencia').innerHTML = "";
         }
-    }
+    };
 
     function generarTablaPapeles() {
         papelesTableBody.innerHTML = '';
@@ -352,7 +364,6 @@
             const maxPagCell = document.createElement('td');
             const stockCell = document.createElement('td');
             
-            // Clic en fila para seleccionar en el combo y subir scroll
             row.addEventListener('click', (e) => {
                 if (e.target.tagName.toLowerCase() !== 'a') {
                     selectPapel.value = papel;
@@ -380,7 +391,6 @@
             const grosor = PAPEL_GROSORES[papel];
             grosorCell.textContent = grosor;
 
-            // Extrae gramaje para aplicar criterio <= 150 gr
             const gramajeMatch = papel.match(/(\d+)\s*gr/i);
             const gramaje = gramajeMatch ? parseInt(gramajeMatch[1], 10) : null;
 
@@ -427,7 +437,7 @@
 
     numPaginasInput.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
-            calcularGrosor();
+            window.calcularGrosor();
         }
     });
 
