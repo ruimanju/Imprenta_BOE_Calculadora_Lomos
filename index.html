@@ -115,7 +115,7 @@
         }
 
         #papeles-table-container {
-            width: 480px;
+            width: 530px; /* Ensanchado para alojar cómodamente la columna Stock */
             margin: 15px auto;
             padding: 8px;
             border: 1px solid #e0e6ed;
@@ -196,10 +196,11 @@
                     <th>Nombre</th>
                     <th>Grosor (mm)</th>
                     <th>págs<br>max/vol</th>
+                    <th>Stock</th>
                 </tr>
             </thead>
             <tbody>
-                </tbody>
+            </tbody>
         </table>
         <p class="leyenda">En negro los papeles estándar, <span class="papel-cursiva">en cursiva</span> los que provisionalmente están sin stock y <span class="papel-rojo">en rojo</span> los de sustitución.</p>
     </div>
@@ -336,18 +337,13 @@
 
     // Genera y llena la tabla del catálogo
     function generarTablaPapeles() {
-        const MAX_PAGINAS = {
-            "Offset Superior Blanco 70 gr FSC/M": 1130,
-            "Offset Superior Blanco 80 gr FSC/M": 1010,
-            "Offset Superior Blanco 90 gr FSC/M": 910
-        };
-
         papelesTableBody.innerHTML = ''; // Limpiar la tabla
         for (const papel in PAPEL_GROSORES) {
             const row = document.createElement('tr');
             const nombreCell = document.createElement('td');
             const grosorCell = document.createElement('td');
             const maxPagCell = document.createElement('td');
+            const stockCell = document.createElement('td'); // Celda para Tampermonkey
             
             const url = PAPEL_URLS[papel];
             if (url) {
@@ -365,8 +361,23 @@
                 nombreCell.textContent = papel;
             }
 
-            grosorCell.textContent = PAPEL_GROSORES[papel];
-            maxPagCell.textContent = MAX_PAGINAS[papel] || '';
+            const grosor = PAPEL_GROSORES[papel];
+            grosorCell.textContent = grosor;
+
+            // Extrae el gramaje del nombre (ej: "150 gr" -> 150)
+            const gramajeMatch = papel.match(/(\d+)\s*gr/i);
+            const gramaje = gramajeMatch ? parseInt(gramajeMatch[1], 10) : null;
+
+            // Criterios: máx 150 g/m² y máx 52 mm de grosor (2 págs por hoja)
+            if (gramaje && gramaje <= 150 && grosor > 0) {
+                const maxHojas = Math.floor(52 / grosor);
+                maxPagCell.textContent = maxHojas * 2;
+            } else {
+                maxPagCell.textContent = '';
+            }
+
+            // Celda vacía por defecto; el script de Tampermonkey la rellenará
+            stockCell.textContent = '-';
 
             if (PAPELES_CURSIVA.includes(papel)) {
                 nombreCell.classList.add('papel-cursiva');
@@ -377,6 +388,7 @@
             row.appendChild(nombreCell);
             row.appendChild(grosorCell);
             row.appendChild(maxPagCell);
+            row.appendChild(stockCell);
             papelesTableBody.appendChild(row);
         }
     }
@@ -414,4 +426,3 @@
 </script>
 </body>
 </html>
-
